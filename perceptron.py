@@ -37,7 +37,7 @@ class Perceptron:
             return 0 if x < 0 else 1
     
     def error_function(self, predicted, actual):
-        return actual - predicted
+        return (predicted - actual) ** 2
     
     def update_weights_bias(self, inputs, target, predicted, learning_rate=0.1):
         delta = 2 * (predicted - target) * (1 - predicted) * predicted
