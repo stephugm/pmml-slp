@@ -1,7 +1,6 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 from perceptron import Perceptron
-from sklearn.model_selection import train_test_split
 
 file_path = 'data.csv'
 if __name__ == "__main__":
@@ -14,10 +13,19 @@ if __name__ == "__main__":
     }
     df['class'] = df['class'].map(class_mapping)
     
-    X = df[['x1', 'x2', 'x3', 'x4']].values.tolist()
-    y = df['class'].values.tolist()
+    # Get features and labels
+    X = df[['x1', 'x2', 'x3', 'x4']]
+    y = df['class']
     
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    # Select specific rows for training and testing
+    train_indices = list(range(0, 40)) + list(range(50, 90))  # Rows 1-40 and 50-90
+    test_indices = list(range(40, 50)) + list(range(90, 100))  # Rows 41-50 and 91-100
+    
+    # Split the data
+    X_train = X.iloc[train_indices].values.tolist()
+    X_test = X.iloc[test_indices].values.tolist()
+    y_train = y.iloc[train_indices].values.tolist()
+    y_test = y.iloc[test_indices].values.tolist()
     
     print(f"Training set size: {len(X_train)}")
     print(f"Testing set size: {len(X_test)}")
@@ -44,7 +52,6 @@ if __name__ == "__main__":
             dot_product = perceptron.dot_product(X_train[i])
             predicted = perceptron.sigmoid(dot_product)
             predicted_class = 1 if predicted >= 0.5 else 0
-            
             # Calculate error
             error = perceptron.error_function(predicted, y_train[i])
             total_error += abs(error)
@@ -52,7 +59,6 @@ if __name__ == "__main__":
             # Count correct predictions for training
             if predicted_class == y_train[i]:
                 correct_train += 1
-            
             # Update weights and bias
             perceptron.update_weights_bias(X_train[i], y_train[i], predicted, learning_rate)
         
@@ -110,8 +116,8 @@ if __name__ == "__main__":
     plt.plot(epochs_range, train_losses, 'b-', label='Training Loss')
     plt.plot(epochs_range, val_losses, 'r-', label='Validation Loss')
     plt.title('Loss per Epoch')
-    plt.xlabel('Epoch')
-    
+    plt.xlabel('Epoch')    
+    plt.xticks(epochs_range)
     plt.ylabel('Loss')
     plt.legend()
     plt.grid(True)
